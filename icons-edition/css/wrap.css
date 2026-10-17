@@ -1,0 +1,203 @@
+/* ==========================================================================
+   wrap.css : the shrink-wrapped magazine intro ("cut the plastic, pull it out")
+   ========================================================================== */
+
+#wrap {
+  position: fixed; inset: 0; z-index: 60;
+  display: grid; place-items: center;
+  perspective: 1500px;
+  overflow: hidden;
+  transition: opacity .55s var(--ease-in-out);
+  --rx: 0deg; --ry: 0deg;     /* parallax tilt */
+  --mx: 50%;  --my: 40%;      /* pointer position for the sheen */
+  --p: 0;                     /* cut progress 0..1 */
+  --cut-y: 13%;               /* where the blade runs */
+}
+#wrap.is-leaving { opacity: 0; pointer-events: none; }
+
+.wrap__desk {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(60% 45% at 50% 60%, rgba(46,157,106,.22), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+}
+.wrap__desk::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(70% 70% at 50% 50%, transparent 40%, rgba(0,0,0,.55));
+}
+
+.wrap__brand {
+  position: absolute; top: 26px; left: 0; right: 0;
+  text-align: center; color: rgba(255,255,255,.78);
+  font-size: 12px; letter-spacing: .28em; text-transform: uppercase; font-weight: 600;
+  animation: fade-up .9s var(--ease-out) both;
+}
+.wrap__brand b { color: #fff; }
+
+.wrap__skip {
+  position: absolute; right: 22px; bottom: 22px;
+  color: rgba(255,255,255,.6); font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+  padding: 8px 12px; border-radius: 999px; transition: color .2s, background .2s;
+}
+.wrap__skip:hover { color: #fff; background: rgba(255,255,255,.1); }
+
+.wrap__stage {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; gap: 26px;
+  transform-style: preserve-3d;
+  animation: stage-in 1.1s var(--ease-out) both;
+}
+@keyframes stage-in { from { opacity: 0; transform: translateY(40px) scale(.96) } to { opacity: 1; transform: none } }
+
+/* The wrapped package ---------------------------------------------------- */
+.pack {
+  --pw: min(66vh * .757, 78vw);
+  position: relative;
+  width: var(--pw);
+  aspect-ratio: 560 / 740;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform .14s linear;
+  cursor: pointer;
+  touch-action: none;
+}
+.pack__shadow {
+  position: absolute; inset: 8% -2% -6% -2%;
+  background: rgba(0,0,0,.55);
+  filter: blur(30px);
+  transform: translateZ(-60px);
+  border-radius: 30px;
+  transition: opacity .6s, transform .6s;
+}
+
+/* magazine replica inside the sleeve */
+.pack__mag {
+  position: absolute; inset: 3.2% 4.2%;
+  container-type: inline-size;
+  border-radius: 5px;
+  overflow: hidden;
+  box-shadow: 0 2px 0 #fff, 0 4px 0 #e9e9e9, 0 6px 0 #fff, 0 8px 0 #dcdcdc, 0 22px 50px rgba(0,0,0,.45);
+  transition: transform 1s var(--ease-out);
+  will-change: transform;
+}
+.pack.is-pulling .pack__mag { transform: translateY(-30%) scale(1.04); }
+
+/* plastic film */
+.pack__plastic, .pack__strip {
+  position: absolute; inset: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background:
+    /* moving specular band */
+    linear-gradient(112deg, transparent calc(var(--mx) - 22%), rgba(255,255,255,.55) calc(var(--mx) - 8%), rgba(255,255,255,.14) calc(var(--mx) - 2%), transparent calc(var(--mx) + 10%)),
+    /* creases */
+    linear-gradient(72deg,  transparent 20%, rgba(255,255,255,.26) 21%, transparent 22.4%),
+    linear-gradient(160deg, transparent 58%, rgba(255,255,255,.2) 59%, transparent 60.4%),
+    linear-gradient(28deg,  transparent 70%, rgba(255,255,255,.2) 71%, transparent 73%),
+    linear-gradient(118deg, transparent 40%, rgba(255,255,255,.14) 41%, transparent 41.8%),
+    /* base film */
+    linear-gradient(165deg, rgba(255,255,255,.26), rgba(255,255,255,.06) 35%, rgba(255,255,255,.2) 65%, rgba(255,255,255,.08)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.65),
+    inset 0 0 36px rgba(255,255,255,.3),
+    0 0 0 1px rgba(255,255,255,.12);
+  backdrop-filter: blur(1.1px) saturate(1.05);
+  transition: transform .8s var(--ease-in-out), opacity .6s;
+  will-change: transform, opacity, clip-path;
+}
+.pack.is-cut .pack__plastic { clip-path: inset(var(--cut-y) 0 0 0); }
+.pack.is-pulling .pack__plastic { transform: translateY(46%) rotate(2.5deg); opacity: 0; transition-delay: .35s; }
+
+/* heat-seal seams at top and bottom of the sleeve */
+.plastic__seam {
+  position: absolute; left: 4%; right: 4%; height: 2px;
+  background: repeating-linear-gradient(90deg, rgba(255,255,255,.7) 0 6px, transparent 6px 10px);
+  opacity: .55;
+}
+.plastic__seam--top { top: 3.5%; }
+.plastic__seam--bottom { bottom: 3.5%; }
+
+/* the torn-off strip (clone of the plastic above the cut) */
+.pack__strip {
+  clip-path: inset(0 0 calc(100% - var(--cut-y)) 0);
+  animation: strip-fly .85s var(--ease-in-out) forwards;
+  pointer-events: none;
+}
+@keyframes strip-fly {
+  0%   { transform: translate(0, 0) rotate(0); opacity: 1; }
+  30%  { transform: translate(-3%, -10%) rotate(-6deg) rotateX(40deg); opacity: 1; }
+  100% { transform: translate(-16%, -90%) rotate(-24deg) rotateX(80deg); opacity: 0; }
+}
+
+/* the band you swipe along (visible once the scissors are picked up) */
+.cutzone {
+  position: absolute; left: 0; right: 0; top: calc(var(--cut-y) - 8%); height: 16%;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,.16) 50%, transparent);
+  opacity: 0; transition: opacity .35s; pointer-events: none; z-index: 2;
+}
+.cutzone::after {
+  content: ''; position: absolute; left: 3%; right: 3%; top: 50%; height: 0;
+  border-top: 2px dashed rgba(255,255,255,.75);
+}
+.pack.is-armed .cutzone { opacity: 1; animation: zone-pulse 1.8s ease-in-out infinite; }
+.pack.is-cutting .cutzone { animation: none; }
+@keyframes zone-pulse { 0%, 100% { opacity: .55 } 50% { opacity: 1 } }
+.pack.is-nudge { animation: nudge .4s; }
+@keyframes nudge { 0%, 100% { translate: 0 0 } 25% { translate: -6px 0 } 75% { translate: 6px 0 } }
+
+/* scissors */
+.scissors {
+  position: absolute; top: var(--cut-y); left: calc(var(--p) * 100%);
+  width: 70px; height: 70px; margin: -35px 0 0 -64px;
+  z-index: 4; pointer-events: none;
+  opacity: 0; transform: scale(.4) rotate(-30deg);
+  transition: opacity .3s, transform .5s var(--ease-spring);
+  filter: drop-shadow(0 6px 8px rgba(0,0,0,.45));
+}
+.pack.is-armed .scissors { opacity: 1; transform: scale(1) rotate(0); }
+.scissors svg { width: 100%; height: 100%; overflow: visible; }
+.scissors .half { transform-origin: 30px 32px; transition: transform .14s ease-out; }
+.pack.is-armed .scissors .half-a { transform: rotate(-14deg); }
+.pack.is-armed .scissors .half-b { transform: rotate(14deg); }
+.scissors.is-snipping .half-a { animation: snip-a .16s ease-in-out infinite alternate; }
+.scissors.is-snipping .half-b { animation: snip-b .16s ease-in-out infinite alternate; }
+@keyframes snip-a { from { transform: rotate(-16deg) } to { transform: rotate(-2deg) } }
+@keyframes snip-b { from { transform: rotate(16deg) } to { transform: rotate(2deg) } }
+
+/* cut line */
+.cut {
+  position: absolute; left: 0; top: var(--cut-y);
+  width: calc(var(--p) * 100%); height: 2px;
+  margin-top: -1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.95) 60%, #fff);
+  box-shadow: 0 0 10px rgba(255,255,255,.9), 0 1px 0 rgba(0,0,0,.35);
+  pointer-events: none;
+  z-index: 3;
+}
+.cut::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 2px; height: 1px;
+  background: rgba(0, 40, 25, .45);
+}
+/* instruction + progress ring under the pack */
+.wrap__hint {
+  display: flex; align-items: center; gap: 14px;
+  color: #fff; font-size: 14px; letter-spacing: .02em;
+  animation: fade-up 1s .5s var(--ease-out) both;
+  transition: opacity .3s;
+}
+.wrap__hint b { font-weight: 700; }
+.wrap__hint small { display: block; color: rgba(255,255,255,.6); font-size: 12px; margin-top: 2px; }
+.hint-ring { position: relative; width: 44px; height: 44px; }
+.hint-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.hint-ring circle { fill: none; stroke-width: 3; }
+.hint-ring .track { stroke: rgba(255,255,255,.2); }
+.hint-ring .fill  { stroke: var(--gold); stroke-linecap: round; stroke-dasharray: 125.6; stroke-dashoffset: calc(125.6 * (1 - var(--p))); }
+.hint-ring__pulse {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.5);
+  animation: hint-pulse 1.8s ease-out infinite;
+}
+.pack.is-armed ~ .wrap__hint .hint-ring__pulse { animation: none; opacity: 0; }
+@keyframes hint-pulse { 0% { transform: scale(.9); opacity: .8 } 100% { transform: scale(1.7); opacity: 0 } }
+#wrap.is-done .wrap__hint { opacity: 0; }

@@ -1,0 +1,47 @@
+/* ==========================================================================
+   icons.css : the drawn icon set (see js/icons.js) — sizing and context colours
+   ========================================================================== */
+
+.icon { display: inline-block; width: 1em; height: 1em; vertical-align: -.14em; line-height: 1; flex: none; }
+.icon svg { display: block; width: 100%; height: 100%; }
+.ico-svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ico-svg [fill="currentColor"] { stroke: none; }
+.icon--bad { color: var(--danger); }
+.icon--ok { color: var(--lau-green); }
+
+.medal { width: 1.3em; height: 1.3em; vertical-align: -.32em; }
+.lb__rank .medal { width: 24px; height: 24px; vertical-align: middle; }
+.game__lb .medal { width: 1.5em; height: 1.5em; margin-right: .15em; }
+.hall__entry .medal { width: 2.4cqw; height: 2.4cqw; margin-right: .3cqw; }
+.result-hero .medal { width: 1.5em; height: 1.5em; }
+
+/* where icons replace the old pictograms */
+.toast__icon { color: var(--lau-green-dark); }
+.toast__icon .icon { width: 20px; height: 20px; }
+.toast--info .toast__icon { color: var(--lau-green); }
+
+.badge__icon { color: var(--ink-4); }
+.badge.is-on .badge__icon { color: var(--lau-green-dark); }
+.badge__icon .icon { width: 50%; height: 50%; }
+.badges--light .badge__icon { color: rgba(255,255,255,.55); }
+.badges--light .badge.is-on .badge__icon { color: var(--lau-green-dark); }
+
+.acc__ico { color: var(--lau-green); }
+.hold__ring .ico { color: var(--lau-green); }
+.hold.is-done .hold__ring .ico { color: var(--gold-light); }
+.wyr__emoji { color: var(--lau-green); }
+.wyr__opt.is-mine .wyr__emoji { color: var(--lau-green-dark); }
+.popover__item .ico { color: var(--lau-green); }
+.game__title .ico { color: var(--lau-green); display: inline-flex; }
+.lb__tab .icon, .hall__game .icon { margin-right: .4em; vertical-align: -.2em; }
+.lb__tab.is-on .icon { color: var(--gold-light); }
+.hall__game .icon { color: var(--gold-light); }
+.scratch__hint .icon { color: var(--gold-deep); }
+.chip .icon { vertical-align: -.18em; }
+.quiz__explain .icon { vertical-align: -.18em; margin-right: .1em; }
+
+/* investors are drawn faces now */
+.investor__face { padding: 6%; }
+.investor__face .face { width: 100%; height: 100%; display: block; }
+.pitch__count .icon { width: .85em; height: .85em; vertical-align: -.1em; margin-right: .15em; }
+.pitch__count span.ms { display: inline-flex; align-items: center; gap: .2em; }
