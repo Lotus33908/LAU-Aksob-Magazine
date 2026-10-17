@@ -105,8 +105,11 @@ window.SFX = (() => {
     coin() { const t = now(); tone({ t, f: 1245, a: .005, d: .08, vol: .11 }); tone({ t: t + .07, f: 1661, a: .005, d: .22, vol: .11 }); },
     chime() {
       const t = now();
-      [659.25, 783.99, 987.77].forEach((f, i) => tone({ t: t + i * .085, type: 'triangle', f, a: .01, d: .4, vol: .13 }));
-      burst({ t: t + .1, dur: .25, type: 'highpass', f: 6000, vol: .035, a: .05 });
+      [659.25, 783.99, 987.77].forEach((f, i) => {
+        tone({ t: t + i * .09, type: 'triangle', f, a: .01, d: .55, vol: .2 });
+        tone({ t: t + i * .09, type: 'sine', f: f * 2, a: .01, d: .3, vol: .05 });
+      });
+      burst({ t: t + .12, dur: .3, type: 'highpass', f: 6000, vol: .05, a: .05 });
     },
     win() {
       const t = now();

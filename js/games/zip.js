@@ -51,7 +51,7 @@ Games.zip = (() => {
     let puzzle, cells = [], pathCells = [], drawing = false, won = false;
 
     const sh = Games.shell({
-      root, game: 'zip', title: 'Zip', icon: '〰️',
+      root, game: 'zip', title: 'Zip', icon: 'zip',
       howto: [
         'Press on <b>1</b> and drag to draw a single line.',
         'Visit the numbers <b>in order</b> and fill <b>every cell</b> of the grid.',

@@ -35,7 +35,7 @@ window.Mascot = (() => {
   const TIPS = {
     0: ['Drag the bottom-right corner to open the issue.', 'Tap the LAU mark five times. Trust me.'],
     1: ['Every line in the contents is a shortcut. Tap one.', 'Your badges fill in as you explore.'],
-    2: ['Hold the 👏 button to applaud the Dean.', 'Tap the portrait to pop it out.'],
+    2: ['Hold the applause button to clap for the Dean.', 'Tap the portrait to pop it out.'],
     3: ['Stop the marker inside the green zone to balance the books.', 'The counters run every time you arrive here.'],
     4: ['Hold the green circle until it pops.', 'Tap a #tag for a definition.', 'Pull the tab on the right edge.'],
     5: ['Hold the bar to unlock the 2030 forecast.', 'Vote in the poll to see what readers think.'],
@@ -53,7 +53,7 @@ window.Mascot = (() => {
   const GENERAL = ['Red pulses show what you can touch.', 'Every game has a “Play large” button.', 'The trophy in the toolbar lists every leaderboard.', 'Arrow keys turn pages too.', 'Use “Games” in the toolbar to jump straight to a puzzle.'];
   const WIN = ['Well played!', 'Hoo-ray! Nice one.', 'That was quick.', 'Leaderboard material.', 'The Dean would be proud.'];
 
-  let root, owl, bubble, mode = 'none', state = 'hidden', busy = false, bubbleTimer = null, idleTimer = null, gazeRaf = null;
+  let root, owl, bubble, mode = 'none', state = 'hidden', busy = false, bubbleTimer = null, idleTimer = null, gazeRaf = null, introduced = false;
   let tipsSeen = new Set();
   const name = () => (CONFIG.mascot && CONFIG.mascot.name) || 'Tally';
 
@@ -70,16 +70,16 @@ window.Mascot = (() => {
     document.addEventListener('pointermove', gaze, { passive: true });
 
     U.on('book:reveal', () => setTimeout(() => {
+      introduced = true;
       peek();
       say(`Hoo! I'm <b>${name()}</b>. Tap me whenever you want a hint.`, 5000);
-      SFX.play('hoot');
     }, 1700));
     U.on('book:fold', () => { clearTimeout(idleTimer); hide(); });            // duck as soon as a page starts to turn
     U.on('book:settle', () => { clearTimeout(idleTimer); idleTimer = setTimeout(() => peek(), 650); });
-    U.on('ach:unlock', def => celebrate(`Badge unlocked: <b>${UI.esc(def.title)}</b>`));
-    U.on('game:win', () => wave(U.pick(WIN)));
+    U.on('ach:unlock', def => { if (introduced) celebrate(`Badge unlocked: <b>${UI.esc(def.title)}</b>`); });   // the unwrap badge lands before the owl has said hello
+    U.on('game:win', () => { if (introduced) wave(U.pick(WIN)); });
     U.on('scratch:reveal', () => happy('Ooh, shiny.'));
-    U.on('hold:complete', d => { if (d && d.action === 'applaud') happy('👏 Hoo-ray for the Dean!'); });
+    U.on('hold:complete', d => { if (d && d.action === 'applaud') happy('Hoo-ray for the Dean!'); });
     scheduleBlink();
   }
 
@@ -119,13 +119,13 @@ window.Mascot = (() => {
   function celebrate(html) {
     busy = true; out();
     root.classList.add('is-happy', 'is-celebrate');
-    say(html, 3800); SFX.play('hoot');
+    say(html, 3800);
     setTimeout(() => { root.classList.remove('is-celebrate', 'is-happy'); busy = false; setState('peek'); }, 2100);
   }
   function wave(html) {
     busy = true; out();
     root.classList.add('is-happy', 'is-wave');
-    say(html, 3200); SFX.play('hoot');
+    say(html, 3200);
     setTimeout(() => { root.classList.remove('is-wave', 'is-happy'); busy = false; setState('peek'); }, 2100);
   }
   function happy(html) {

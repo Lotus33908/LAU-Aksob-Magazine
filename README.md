@@ -25,13 +25,6 @@ Open `index.html` in a browser or publish the folder with GitHub Pages.
 | Confetti in LAU green, white and gold; subtle synthesised sound effects with a mute toggle | everywhere |
 | **Tally the owl**, an SVG mascot drawn in code ([js/mascot.js](js/mascot.js)): peeks from behind the book's edge, ducks while pages turn, follows the cursor with its eyes, blinks, waves after a game, hops for a badge, and gives page-specific hints when tapped (rename or disable in `CONFIG.mascot`) | everywhere |
 
-## Variants
-
-`icons-edition/` is a complete copy of the magazine with every emoji replaced by icons drawn
-as SVG (`icons-edition/js/icons.js`), including drawn investor portraits and a drawn crown.
-Open either `index.html` to compare. Once a direction is chosen, keep one copy at the repo root
-and delete the other so GitHub Pages serves a single edition.
-
 ## Editing the content
 
 Everything editorial lives in `index.html`, one `<div class="page">` per page, in reading order.
@@ -62,6 +55,10 @@ Copy marked with a small **sample** chip is placeholder text to replace. Placeho
 | `.scratch[data-foil="gold\|silver"]` with `.scratch__under` + `.scratch__canvas` | scratch card; clears itself past ~55 % (`data-fortune` draws a random fortune) |
 | `[data-goto="n"]` | jumps to page n |
 | `[data-confetti]`, `[data-share]`, `[data-expand="#game"]` | confetti, copy link, play a game large |
+
+## Icons
+
+There are no emoji anywhere. Every pictogram, medal, badge, investor portrait and the Queens crown is drawn as SVG in `js/icons.js` (one 24-unit grid, 2px round strokes, LAU green and gold). Use `<i data-icon="name"></i>` in markup or `Icons.svg('name')` in script, and add new paths to the same file so everything stays in one style.
 
 ## Sound
 

@@ -1,5 +1,6 @@
 /* main.js — boot sequence and the bottom navigation bar */
 document.addEventListener('DOMContentLoaded', () => {
+  Icons.hydrate();
   Confetti.init();
   Interactions.init();
   Scratch.init();
@@ -47,11 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ---- intro, then the book -------------------------------------------------- */
   Wrap.init(() => {
     Book.reveal();
+    // the welcome ding: a first visit earns the badge (which chimes); later visits chime anyway
+    setTimeout(() => { if (!Store.ACH.unlock('unwrap')) SFX.play('chime'); }, 450);
     const small = window.innerWidth < 600;
     setTimeout(() => UI.toast({
       kick: 'Welcome', title: `${CONFIG.magazine.name} — ${CONFIG.magazine.issue}`,
       text: small ? 'Swipe to turn pages. Use “Play large” inside any game. Best enjoyed on a tablet or desktop.' : 'Drag or click a page corner to flip. Red pulses show what is interactive.',
-      icon: '📖', type: 'info', ms: small ? 6500 : 5000,
+      icon: 'book', type: 'info', ms: small ? 6500 : 5000,
     }), 1500);
   });
 });

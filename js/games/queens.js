@@ -52,7 +52,7 @@ Games.queens = (() => {
     const n = CONFIG.games.queensSize;
     let region = [], state = [], autoX = true, won = false, started = false, cellsEl = [];
     const sh = Games.shell({
-      root, game: 'queens', title: 'Queens', icon: '👑',
+      root, game: 'queens', title: 'Queens', icon: 'crown',
       howto: [
         `Place exactly <b>one crown</b> in every row, every column and every colour region (${n} in total).`,
         'Crowns can never <b>touch</b> — not even diagonally.',
@@ -65,7 +65,7 @@ Games.queens = (() => {
       ],
     });
     sh.body.innerHTML = `<div class="queens"><div class="queens__grid" data-hot></div>
-      <div class="queens__legend"><span><b>1 tap</b> ✕</span><span><b>2 taps</b> ♛</span><span><b>3 taps</b> clear</span></div></div>`;
+      <div class="queens__legend"><span><b>1 tap</b> ✕</span><span><b>2 taps</b> ${Icons.svg('crown')}</span><span><b>3 taps</b> clear</span></div></div>`;
     const box = sh.q('.queens'), grid = sh.q('.queens__grid');
     grid.style.setProperty('--n', n);
 

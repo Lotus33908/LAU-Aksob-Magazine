@@ -5,7 +5,7 @@ Games.shell = function ({ root, game, title, icon, tools = [], howto = [] }) {
   root.classList.add('game', 'game--' + game);
   root.innerHTML = `
     <div class="game__head">
-      <div class="game__title"><span class="ico">${icon}</span>${title}</div>
+      <div class="game__title"><span class="ico">${Icons.svg(icon)}</span>${title}</div>
       <div class="game__timer">0:00</div>
     </div>
     <div class="game__tools"></div>
@@ -44,8 +44,7 @@ Games.shell = function ({ root, game, title, icon, tools = [], howto = [] }) {
     const top = Store.LB.top(game, 3);
     lbEl.innerHTML = '';
     if (!top.length) { lbEl.append(U.el('span', { class: 'empty', text: 'No scores yet — be the first' })); return; }
-    const medals = ['🥇', '🥈', '🥉'];
-    top.forEach((e, i) => lbEl.append(U.el('span', { html: `${medals[i]} <b>${UI.esc(e.name)}</b> ${def.fmt(e.score)}` })));
+        top.forEach((e, i) => lbEl.append(U.el('span', { html: `${Icons.medal(i + 1)} <b>${UI.esc(e.name)}</b> ${def.fmt(e.score)}` })));
   }
   renderLb();
   U.on('lb:update', d => { if (d.game === game) renderLb(); });

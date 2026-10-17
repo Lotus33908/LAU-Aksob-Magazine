@@ -13,11 +13,11 @@ window.Store = (() => {
 
   /* ---- leaderboards (per game, top 50 kept, top 10 shown) ---------------- */
   const GAMES = {
-    zip:    { label: 'Zip',         icon: '〰️', better: 'lower',  unit: 'time',  fmt: v => U.fmtTime(v) },
-    sudoku: { label: 'Sudoku',      icon: '🔢', better: 'lower',  unit: 'time',  fmt: v => U.fmtTime(v) },
-    queens: { label: 'Queens',      icon: '👑', better: 'lower',  unit: 'time',  fmt: v => U.fmtTime(v) },
-    pitch:  { label: 'Pitch Rush',  icon: '🚀', better: 'higher', unit: 'score', fmt: v => U.fmtNum(v) + ' pitches' },
-    quiz:   { label: 'Business IQ', icon: '🧠', better: 'higher', unit: 'score', fmt: v => v + ' / 6' },
+    zip:    { label: 'Zip',         icon: 'zip', better: 'lower',  unit: 'time',  fmt: v => U.fmtTime(v) },
+    sudoku: { label: 'Sudoku',      icon: 'grid', better: 'lower',  unit: 'time',  fmt: v => U.fmtTime(v) },
+    queens: { label: 'Queens',      icon: 'crown', better: 'lower',  unit: 'time',  fmt: v => U.fmtTime(v) },
+    pitch:  { label: 'Pitch Rush',  icon: 'rocket', better: 'higher', unit: 'score', fmt: v => U.fmtNum(v) + ' pitches' },
+    quiz:   { label: 'Business IQ', icon: 'bulb', better: 'higher', unit: 'score', fmt: v => v + ' / 6' },
   };
   const LB = {
     games: GAMES,
@@ -50,19 +50,19 @@ window.Store = (() => {
 
   /* ---- achievements --------------------------------------------------------- */
   const ACHIEVEMENTS = [
-    { id: 'unwrap',   icon: '✂️', title: 'Fresh off the press', text: 'Cut the wrap and pulled out the magazine.' },
-    { id: 'flip',     icon: '📖', title: 'Page turner',         text: 'Turned your first page.' },
-    { id: 'explorer', icon: '🧭', title: 'Explorer',            text: 'Visited every page of the issue.' },
-    { id: 'applause', icon: '👏', title: 'Standing ovation',    text: 'Held to applaud the Dean.' },
-    { id: 'balance',  icon: '⚖️', title: 'Books balanced',      text: 'Stopped the marker in the green zone.' },
-    { id: 'curious',  icon: '🔍', title: 'Curious mind',        text: 'Opened five pop-outs or tags.' },
-    { id: 'voter',    icon: '🗳️', title: 'Voice heard',         text: 'Voted in a reader poll.' },
-    { id: 'scratch',  icon: '🪙', title: 'Scratcher',           text: 'Scratched a card all the way through.' },
-    { id: 'zip',      icon: '〰️', title: 'Line master',         text: 'Completed a Zip puzzle.' },
-    { id: 'sudoku',   icon: '🔢', title: 'Grid guru',           text: 'Solved a Sudoku.' },
-    { id: 'queens',   icon: '👑', title: 'Crown holder',        text: 'Placed every queen.' },
-    { id: 'pitch',    icon: '🚀', title: 'Closer',              text: 'Scored 60+ in Pitch Rush.' },
-    { id: 'quiz',     icon: '🧠', title: 'Business IQ',         text: 'Aced the quiz.' },
+    { id: 'unwrap',   icon: 'scissors', title: 'Fresh off the press', text: 'Cut the wrap and pulled out the magazine.' },
+    { id: 'flip',     icon: 'book', title: 'Page turner',         text: 'Turned your first page.' },
+    { id: 'explorer', icon: 'compass', title: 'Explorer',            text: 'Visited every page of the issue.' },
+    { id: 'applause', icon: 'hand', title: 'Standing ovation',    text: 'Held to applaud the Dean.' },
+    { id: 'balance',  icon: 'scale', title: 'Books balanced',      text: 'Stopped the marker in the green zone.' },
+    { id: 'curious',  icon: 'search', title: 'Curious mind',        text: 'Opened five pop-outs or tags.' },
+    { id: 'voter',    icon: 'ballot', title: 'Voice heard',         text: 'Voted in a reader poll.' },
+    { id: 'scratch',  icon: 'coin', title: 'Scratcher',           text: 'Scratched a card all the way through.' },
+    { id: 'zip',      icon: 'zip', title: 'Line master',         text: 'Completed a Zip puzzle.' },
+    { id: 'sudoku',   icon: 'grid', title: 'Grid guru',           text: 'Solved a Sudoku.' },
+    { id: 'queens',   icon: 'crown', title: 'Crown holder',        text: 'Placed every queen.' },
+    { id: 'pitch',    icon: 'rocket', title: 'Closer',              text: 'Scored 60+ in Pitch Rush.' },
+    { id: 'quiz',     icon: 'bulb', title: 'Business IQ',         text: 'Aced the quiz.' },
   ];
   const ACH = {
     list: ACHIEVEMENTS,
@@ -90,5 +90,14 @@ window.Store = (() => {
     mark(idx) { const v = get('visited', []); if (!v.includes(idx)) { v.push(idx); set('visited', v); } return v; },
   };
 
-  return { get, set, player, LB, ACH, counters, progress };
+  /* wipe badges, page history, hints and votes — keeps leaderboards, name and sound setting */
+  function resetProgress() {
+    const keys = [];
+    try { for (let i = 0; i < localStorage.length; i++) keys.push(localStorage.key(i)); } catch (e) {}
+    keys.filter(k => k && k.startsWith(PREFIX) && !k.startsWith(PREFIX + 'lb.') && k !== PREFIX + 'player' && k !== PREFIX + 'sound')
+      .forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    U.emit('progress:reset');
+  }
+
+  return { get, set, player, LB, ACH, counters, progress, resetProgress };
 })();

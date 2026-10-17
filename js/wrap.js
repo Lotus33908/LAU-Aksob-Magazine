@@ -90,7 +90,6 @@ window.Wrap = (() => {
       setTimeout(() => SFX.play('thud'), 1250);
       setTimeout(() => { wrap.classList.add('is-leaving'); onDone && onDone(); }, 1350);
       setTimeout(() => wrap.remove(), 2200);
-      Store.ACH.unlock('unwrap');
     }
 
     const skip = U.$('#wrap-skip');

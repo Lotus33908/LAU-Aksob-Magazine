@@ -77,7 +77,7 @@ window.Interactions = (() => {
         SFX.play('win'); Confetti.fromEl(btn, { count: 90, spread: 90, power: 13 });
         const lbl = btn.querySelector('.hold__label');
         if (lbl) lbl.innerHTML = 'Subscribed ✓<small>Demo — nothing was sent</small>';
-        UI.toast({ kick: 'Subscribed', title: 'You are on the list', text: 'The next issue will find you. (Demo only.)', icon: '📬', type: 'info' });
+        UI.toast({ kick: 'Subscribed', title: 'You are on the list', text: 'The next issue will find you. (Demo only.)', icon: 'mail', type: 'info' });
         break;
       }
       case 'confetti':
@@ -331,8 +331,8 @@ window.Interactions = (() => {
     U.$$('[data-expand]').forEach(b => b.addEventListener('click', () => { const g = U.$(b.dataset.expand); if (g) UI.expand(g); }));
     U.$$('[data-share]').forEach(b => b.addEventListener('click', async () => {
       SFX.play('click');
-      try { await navigator.clipboard.writeText(location.href); UI.toast({ kick: 'Share', title: 'Link copied', text: 'Paste it anywhere.', icon: '🔗', type: 'info', ms: 2200 }); }
-      catch (e) { UI.toast({ kick: 'Share', title: 'Copy this link', text: location.href, icon: '🔗', type: 'info' }); }
+      try { await navigator.clipboard.writeText(location.href); UI.toast({ kick: 'Share', title: 'Link copied', text: 'Paste it anywhere.', icon: 'link', type: 'info', ms: 2200 }); }
+      catch (e) { UI.toast({ kick: 'Share', title: 'Copy this link', text: location.href, icon: 'link', type: 'info' }); }
     }));
     U.$$('[data-open-ach]').forEach(b => b.addEventListener('click', () => UI.achievements()));
     U.$$('[data-open-lb]').forEach(b => b.addEventListener('click', () => UI.leaderboard(b.dataset.openLb || 'zip')));
@@ -352,7 +352,7 @@ window.Interactions = (() => {
       m.addEventListener('click', e => {
         e.stopPropagation(); taps++;
         SFX.play('tick'); m.style.animation = 'none'; void m.offsetWidth; m.style.animation = 'wiggle .4s';
-        if (taps === 5) { taps = 0; SFX.play('confetti'); Confetti.fromEl(m, { count: 120, spread: 120, power: 14 }); UI.toast({ kick: 'Easter egg', title: 'Go Green!', text: 'You found the hidden confetti.', icon: '🎉', type: 'info' }); }
+        if (taps === 5) { taps = 0; SFX.play('confetti'); Confetti.fromEl(m, { count: 120, spread: 120, power: 14 }); UI.toast({ kick: 'Easter egg', title: 'Go Green!', text: 'You found the hidden confetti.', icon: 'party', type: 'info' }); }
       });
     });
 
@@ -374,6 +374,13 @@ window.Interactions = (() => {
     const ac = U.$('#applause-count');
     if (ac) ac.textContent = U.fmtNum(CONFIG.seeds.applause + Store.counters.get('applause'));
 
+    U.on('progress:reset', () => {
+      UI.renderAllBadges();
+      U.$$('[data-ach-count]').forEach(n => n.textContent = Store.ACH.count());
+      U.$$('.toc li.is-visited').forEach(li => li.classList.remove('is-visited'));
+      if (U.renderRing) U.renderRing();
+    });
+
     // hall of fame on the back cover
     renderHall();
     U.on('lb:update', renderHall);
@@ -385,9 +392,9 @@ window.Interactions = (() => {
     hall.innerHTML = '';
     Object.entries(Store.LB.games).forEach(([g, def]) => {
       const top = Store.LB.top(g, 3);
-      const box = U.el('div', {}, [U.el('div', { class: 'hall__game', html: `${def.icon} ${UI.esc(def.label)}` })]);
+      const box = U.el('div', {}, [U.el('div', { class: 'hall__game', html: `${Icons.svg(def.icon)}${UI.esc(def.label)}` })]);
       if (!top.length) box.append(U.el('div', { class: 'hall__empty', text: 'No scores yet' }));
-      top.forEach((e, i) => box.append(U.el('div', { class: 'hall__entry' }, [U.el('span', { text: `${['🥇', '🥈', '🥉'][i]} ${e.name}` }), U.el('span', { text: def.fmt(e.score) })])));
+      top.forEach((e, i) => box.append(U.el('div', { class: 'hall__entry' }, [U.el('span', { html: `${Icons.medal(i + 1)}${UI.esc(e.name)}` }), U.el('span', { text: def.fmt(e.score) })])));
       hall.append(box);
     });
   }

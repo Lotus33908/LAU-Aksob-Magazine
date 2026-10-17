@@ -5,17 +5,16 @@
 window.Games = window.Games || {};
 
 Games.pitch = (() => {
-  const FACES = [['😐', '🙂', '😃', '🤩'], ['🤨', '🙂', '😄', '🤑'], ['😶', '🙂', '😁', '🥳']];
   const LABELS = ['skeptical', 'interested', 'excited', 'sold!'];
   const NAMES = ['Angel investor', 'VC partner', 'Bank director'];
   const MILESTONES = [
-    { at: 20, label: 'Angel round', emoji: '😇' },
-    { at: 45, label: 'Seed round', emoji: '🌱' },
-    { at: 70, label: 'Term sheet', emoji: '📝' },
-    { at: 100, label: 'Series A', emoji: '🚀' },
-    { at: 135, label: 'Series B', emoji: '🏦' },
-    { at: 175, label: 'Unicorn', emoji: '🦄' },
-    { at: 230, label: 'IPO', emoji: '🔔' },
+    { at: 20, label: 'Angel round', icon: 'sun' },
+    { at: 45, label: 'Seed round', icon: 'seedling' },
+    { at: 70, label: 'Term sheet', icon: 'document' },
+    { at: 100, label: 'Series A', icon: 'rocket' },
+    { at: 135, label: 'Series B', icon: 'bank' },
+    { at: 175, label: 'Unicorn', icon: 'gem' },
+    { at: 230, label: 'IPO', icon: 'bell' },
   ];
   const PER_PITCH = 12500;
 
@@ -23,7 +22,7 @@ Games.pitch = (() => {
     const secs = CONFIG.games.pitchSeconds;
     let state = 'idle', clicks = 0, taps = [], nextIdx = 0, raf = null, endAt = 0, best = Store.get('pitch.best', 0);
     const sh = Games.shell({
-      root, game: 'pitch', title: 'Pitch Rush', icon: '🚀',
+      root, game: 'pitch', title: 'Pitch Rush', icon: 'rocket',
       howto: [
         `Tap <b>PITCH</b> to start a ${secs}-second round. The clock is the only limit.`,
         'Every tap is one pitch and adds funding. There is no cap — keep going.',
@@ -32,7 +31,7 @@ Games.pitch = (() => {
       ],
     });
     sh.body.innerHTML = `<div class="pitch">
-      <div class="pitch__investors">${NAMES.map((nm, i) => `<div class="investor" data-mood="0"><div class="investor__face">${FACES[i][0]}</div><b>${nm}</b><span class="mood">${LABELS[0]}</span></div>`).join('')}</div>
+      <div class="pitch__investors">${NAMES.map((nm, i) => `<div class="investor" data-mood="0"><div class="investor__face">${Icons.face(i, 0)}</div><b>${nm}</b><span class="mood">${LABELS[0]}</span></div>`).join('')}</div>
       <div class="pitch__next"><span>Next: <b class="n-label">${MILESTONES[0].label}</b></span><span class="n-togo">${MILESTONES[0].at} pitches to go</span></div>
       <div class="pitch__meter"><div class="pitch__fill"></div></div>
       <div class="pitch__btnwrap"><button class="pitch__btn" type="button" data-hot>PITCH<small>tap to start</small></button></div>
@@ -51,7 +50,7 @@ Games.pitch = (() => {
       investors.forEach((inv, i) => {
         if (+inv.dataset.mood === m) return;
         inv.dataset.mood = m;
-        inv.querySelector('.investor__face').textContent = FACES[i][m];
+        inv.querySelector('.investor__face').innerHTML = Icons.face(i, m);
         inv.querySelector('.mood').textContent = LABELS[m];
       });
     }
@@ -70,9 +69,9 @@ Games.pitch = (() => {
       if (left <= 0) { finish(); return; }
       raf = requestAnimationFrame(loop);
     }
-    function showCount(txt, small) {
+    function showCount(txt, small, icon) {
       countEl.innerHTML = '';
-      countEl.append(U.el('span', { text: txt, class: small ? 'ms' : '' }));
+      countEl.append(U.el('span', { html: (icon ? Icons.svg(icon) : '') + UI.esc(txt), class: small ? 'ms' : '' }));
     }
     function start() {
       state = 'countdown'; clicks = 0; taps = []; nextIdx = 0;
@@ -91,7 +90,7 @@ Games.pitch = (() => {
       tick();
     }
     function milestone(m) {
-      showCount(`${m.emoji} ${m.label}!`, true);
+      showCount(m.label + '!', true, m.icon);
       SFX.play('coin');
       meter.classList.remove('is-flash'); void meter.offsetWidth; meter.classList.add('is-flash');
       Confetti.fromEl(meter, { count: 28 + nextIdx * 8, power: 8, spread: 90, colors: ['#C8A951', '#E8D08A', '#006341', '#fff'] });
@@ -119,13 +118,13 @@ Games.pitch = (() => {
       btn.classList.remove('is-go'); btn.innerHTML = 'PITCH<small>play again</small>';
       sh.timerEl.classList.remove('is-running'); sh.timer.set('0.0s');
       SFX.play('timeup');
-      investors.forEach((inv, i) => { const m = Math.min(3, nextIdx); inv.dataset.mood = m; inv.querySelector('.investor__face').textContent = FACES[i][m]; inv.querySelector('.mood').textContent = LABELS[m]; });
+      investors.forEach((inv, i) => { const m = Math.min(3, nextIdx); inv.dataset.mood = m; inv.querySelector('.investor__face').innerHTML = Icons.face(i, m); inv.querySelector('.mood').textContent = LABELS[m]; });
       const funding = clicks * PER_PITCH;
       const reached = nextIdx ? MILESTONES[nextIdx - 1] : null;
       if (clicks > best) { best = clicks; Store.set('pitch.best', best); sBest.textContent = U.fmtNum(best); }
       if (clicks >= 60) { Confetti.cannons(); SFX.play('win'); Store.ACH.unlock('pitch'); }
       else if (clicks >= 30) Confetti.fromEl(btn, { count: 80, spread: 90, power: 12 });
-      sh.status(reached ? `${reached.emoji} ${reached.label} reached — ${clicks} pitches, $${U.fmtNum(funding / 1000)}k raised.` : `${clicks} pitches. The room needs more energy — try again!`);
+      sh.status(reached ? `${reached.label} reached — ${clicks} pitches, $${U.fmtNum(funding / 1000)}k raised.` : `${clicks} pitches. The room needs more energy — try again!`);
       setTimeout(() => UI.gameResult({ game: 'pitch', score: clicks, meta: { funding, milestone: reached ? reached.label : null } }), 1300);
     }
 

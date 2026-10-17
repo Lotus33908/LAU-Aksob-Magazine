@@ -5,9 +5,9 @@ window.UI = (() => {
   let stack = [];
 
   /* ---- toasts ------------------------------------------------------------ */
-  function toast({ title, text, icon = '✨', kick = 'Achievement unlocked', type = '', ms = 3800 }) {
+  function toast({ title, text, icon = 'sparkle', kick = 'Achievement unlocked', type = '', ms = 3800 }) {
     const n = U.el('div', { class: 'toast' + (type ? ' toast--' + type : '') }, [
-      U.el('div', { class: 'toast__icon', text: icon }),
+      U.el('div', { class: 'toast__icon', html: Icons.svg(icon) }),
       U.el('div', {}, [
         kick ? U.el('div', { class: 'toast__kick', text: kick }) : null,
         U.el('div', { class: 'toast__title', text: title }),
@@ -196,20 +196,20 @@ window.UI = (() => {
       const list = Store.LB.top(g, 10);
       table.innerHTML = '';
       if (!list.length) {
-        table.innerHTML = `<div class="lb__empty"><b>${def.icon}</b>No scores yet for ${esc(def.label)}.<br>Be the first on the board.</div>`;
+        table.innerHTML = `<div class="lb__empty"><b>${Icons.svg(def.icon)}</b>No scores yet for ${esc(def.label)}.<br>Be the first on the board.</div>`;
         return;
       }
       const tbl = U.el('table', { class: 'lb__table' });
       list.forEach((e, i) => {
         const meta = def.unit !== 'time' && e.time ? U.fmtTime(e.time) : new Date(e.at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
         const tr = U.el('tr', { class: e.id === highlightId ? 'lb__me' : '' });
-        tr.innerHTML = `<td class="lb__rank r${i + 1}">${i + 1}</td><td class="lb__name">${esc(e.name)}</td><td class="lb__score">${def.fmt(e.score)}</td><td class="lb__meta">${meta}</td>`;
+        tr.innerHTML = `<td class="lb__rank r${i + 1}">${i < 3 ? Icons.medal(i + 1) : i + 1}</td><td class="lb__name">${esc(e.name)}</td><td class="lb__score">${def.fmt(e.score)}</td><td class="lb__meta">${meta}</td>`;
         tbl.append(tr);
       });
       table.append(tbl);
     }
     Object.entries(Store.LB.games).forEach(([g, def]) => {
-      const t = U.el('button', { class: 'lb__tab', dataset: { g }, text: `${def.icon} ${def.label}`, type: 'button' });
+      const t = U.el('button', { class: 'lb__tab', dataset: { g }, html: `${Icons.svg(def.icon)}${esc(def.label)}`, type: 'button' });
       t.addEventListener('click', () => { SFX.play('click'); render(g); });
       tabs.append(t);
     });
@@ -242,7 +242,7 @@ window.UI = (() => {
     body.append(form);
     let submitted = null;
     const api = modal({
-      title: `${def.icon} ${def.label} — well played!`, body, sound: 'chime',
+      title: `${def.label} — well played!`, body, sound: 'chime',
       actions: [{ label: 'View leaderboard', cls: 'btn--ghost', close: false, onClick: () => { api.close(); leaderboard(game, submitted && submitted.entry.id); } }],
     });
     form.addEventListener('submit', e => {
@@ -252,7 +252,7 @@ window.UI = (() => {
       submitted = Store.LB.submit(game, score, { time, ...meta });
       const rank = body.querySelector('.rank');
       rank.hidden = false;
-      rank.textContent = submitted.rank === 1 ? '🥇 New #1 on this device' : `Ranked #${submitted.rank}`;
+      rank.innerHTML = submitted.rank === 1 ? Icons.medal(1) + ' New #1 on this device' : `Ranked #${submitted.rank}`;
       btn.textContent = 'Saved ✓'; btn.disabled = true; input.disabled = true;
       SFX.play('coin');
       if (submitted.rank === 1) Confetti.fromEl(rank, { count: 60, power: 9 });
@@ -269,14 +269,14 @@ window.UI = (() => {
     Store.ACH.list.forEach(a => {
       const on = Store.ACH.has(a.id);
       container.append(U.el('div', { class: 'badge' + (on ? ' is-on' : ''), title: a.text }, [
-        U.el('div', { class: 'badge__icon', text: a.icon }),
+        U.el('div', { class: 'badge__icon', html: Icons.svg(a.icon) }),
         U.el('span', { text: a.title }),
       ]));
     });
   }
   function renderAllBadges() { U.$$('[data-badges]').forEach(renderBadges); }
   U.on('ach:unlock', def => {
-    SFX.play('chime');
+    setTimeout(() => SFX.play('chime'), 260);
     toast({ title: def.title, text: def.text, icon: def.icon });
     renderAllBadges();
     U.$$('[data-ach-count]').forEach(n => n.textContent = Store.ACH.count());
@@ -287,12 +287,26 @@ window.UI = (() => {
     Store.ACH.list.forEach(a => {
       const on = Store.ACH.has(a.id);
       grid.append(U.el('div', { class: 'badge' + (on ? ' is-on' : ''), style: 'font-size:12px', title: a.text }, [
-        U.el('div', { class: 'badge__icon', text: a.icon, style: 'width:56px;height:56px;font-size:26px' }),
+        U.el('div', { class: 'badge__icon', html: Icons.svg(a.icon), style: 'width:56px;height:56px' }),
         U.el('span', { text: a.title }),
       ]));
     });
     const wrap = U.el('div', {}, [U.el('p', { style: 'margin-bottom:14px;color:var(--ink-3)', text: `${Store.ACH.count()} of ${Store.ACH.list.length} unlocked. Explore, play and hold things to earn the rest.` }), grid]);
-    return modal({ title: 'Your achievements', body: wrap });
+    return modal({
+      title: 'Your achievements', body: wrap,
+      actions: [{
+        label: 'Reset progress', cls: 'btn--ghost btn--sm', close: false,
+        onClick: (api, btn) => {
+          if (btn.dataset.armed) {
+            Store.resetProgress(); api.close();
+            toast({ kick: 'Progress', title: 'Progress reset', text: 'Badges, hints and page history cleared. Reload to replay the intro.', icon: 'sparkle', type: 'info', ms: 5000 });
+          } else {
+            btn.dataset.armed = '1'; btn.textContent = 'Tap again to confirm';
+            setTimeout(() => { delete btn.dataset.armed; btn.textContent = 'Reset progress'; }, 2500);
+          }
+        },
+      }],
+    });
   }
 
   return { esc, toast, modal, howto, tooltip, hideTooltip, popcard, expand, leaderboard, gameResult, renderBadges, renderAllBadges, achievements, isOpen, closeTop };

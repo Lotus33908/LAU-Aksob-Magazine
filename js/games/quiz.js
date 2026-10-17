@@ -18,7 +18,7 @@ Games.quiz = (() => {
   function mount(root) {
     let qs = [], idx = 0, score = 0, t0 = 0, answered = false;
     const sh = Games.shell({
-      root, game: 'quiz', title: 'Business IQ', icon: '🧠',
+      root, game: 'quiz', title: 'Business IQ', icon: 'bulb',
       howto: ['Six quick questions from finance, marketing and economics.', 'Pick an answer; you will see why it is right.', 'Score out of 6, fastest time breaks ties.'],
       tools: [{ label: 'Restart', onClick: () => intro() }],
     });
@@ -56,7 +56,7 @@ Games.quiz = (() => {
       if (q.ok) { score++; SFX.play('coin'); Confetti.fromEl(btn, { count: 30, power: 7, spread: 70 }); }
       else { btn.classList.add('is-wrong'); SFX.play('fail'); }
       const after = body.querySelector('.quiz__after');
-      after.innerHTML = `<div class="quiz__explain">${q.ok ? '✅ Correct. ' : '❌ Not quite. '}${q.why}</div><div class="quiz__next"><button class="btn btn--primary btn--sm" type="button">${idx + 1 < qs.length ? 'Next question →' : 'See my score'}</button></div>`;
+      after.innerHTML = `<div class="quiz__explain">${q.ok ? Icons.svg('check-circle', 'icon--ok') + ' Correct. ' : Icons.svg('x-circle', 'icon--bad') + ' Not quite. '}${q.why}</div><div class="quiz__next"><button class="btn btn--primary btn--sm" type="button">${idx + 1 < qs.length ? 'Next question →' : 'See my score'}</button></div>`;
       after.querySelector('button').addEventListener('click', () => { SFX.play('click'); idx++; idx < qs.length ? render() : finish(); });
     }
     function finish() {

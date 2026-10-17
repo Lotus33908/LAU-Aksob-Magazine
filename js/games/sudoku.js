@@ -58,7 +58,7 @@ Games.sudoku = (() => {
   function mount(root) {
     let puzzle = [], solution = [], grid = [], notes = [], sel = null, pencil = false, history = [], diff = 'easy', won = false, hints = 0;
     const sh = Games.shell({
-      root, game: 'sudoku', title: 'Sudoku', icon: '🔢',
+      root, game: 'sudoku', title: 'Sudoku', icon: 'grid',
       howto: [
         'Fill every row, column and 3×3 box with the digits <b>1–9</b>, no repeats.',
         'Tap a cell, then a number. <b>Pencil</b> toggles small candidate notes.',
@@ -75,7 +75,7 @@ Games.sudoku = (() => {
       <div class="sudoku__grid" data-hot></div>
       <div class="sudoku__pad"></div>
       <div class="sudoku__actions">
-        <button type="button" class="btn btn--ghost" data-a="pencil">✏️ Pencil</button>
+        <button type="button" class="btn btn--ghost" data-a="pencil">${Icons.svg('pencil')} Pencil</button>
         <button type="button" class="btn btn--ghost" data-a="erase">Erase</button>
         <button type="button" class="btn btn--ghost" data-a="undo">Undo</button>
         <button type="button" class="btn btn--ghost" data-a="hint">Hint</button>
