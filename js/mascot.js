@@ -46,7 +46,7 @@ window.Mascot = (() => {
     10: ['Start on 1 and draw through every cell, in order.', 'Drag back over your line to erase.'],
     11: ['Pencil mode lets you note candidates. Hints cost 30 seconds.'],
     12: ['One crown per row, column and colour. Crowns never touch.'],
-    13: ['Scratch the gold card for the term of the issue.'],
+    13: ['Riddles reward thinking, not speed. Read each one twice.', 'Scratch the gold card for the term of the issue.'],
     14: ['Drag the handle to compare the campuses.', 'Tap a gold dot on the map.'],
     15: ['Scratch the silver card for your fortune.', 'Hold to subscribe. It is only a demo.'],
   };

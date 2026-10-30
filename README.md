@@ -20,7 +20,7 @@ Open `index.html` in a browser or publish the folder with GitHub Pages.
 | **Balance the Books** timing mini-game | page 3 |
 | **Pitch Rush** rapid-tap game with investors whose mood changes with your meter | page 7 |
 | **Zip** (draw one line through every cell, numbers in order), **Sudoku** (unique-solution generator, 3 levels, pencil marks, hints, keyboard), **Queens** (one crown per row, column and colour region) | pages 10 to 12 |
-| **Business IQ** six-question quiz | page 13 |
+| **Business Riddles**: six interview-style brain-teasers per round from a bank of twenty, each with its reasoning | page 13 |
 | Leaderboards per game (top 10, stored on the device), achievements with toasts, hall of fame on the back cover | toolbar + back cover |
 | Confetti in LAU green, white and gold; subtle synthesised sound effects with a mute toggle | everywhere |
 | **Tally the owl**, an SVG mascot drawn in code ([js/mascot.js](js/mascot.js)): peeks from behind the book's edge, ducks while pages turn, follows the cursor with its eyes, blinks, waves after a game, hops for a badge, and gives page-specific hints when tapped (rename or disable in `CONFIG.mascot`) | everywhere |

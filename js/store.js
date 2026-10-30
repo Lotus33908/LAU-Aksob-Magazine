@@ -17,7 +17,7 @@ window.Store = (() => {
     sudoku: { label: 'Sudoku',      icon: 'grid', better: 'lower',  unit: 'time',  fmt: v => U.fmtTime(v) },
     queens: { label: 'Queens',      icon: 'crown', better: 'lower',  unit: 'time',  fmt: v => U.fmtTime(v) },
     pitch:  { label: 'Pitch Rush',  icon: 'rocket', better: 'higher', unit: 'score', fmt: v => U.fmtNum(v) + ' pitches' },
-    quiz:   { label: 'Business IQ', icon: 'bulb', better: 'higher', unit: 'score', fmt: v => v + ' / 6' },
+    quiz:   { label: 'Riddles',     icon: 'bulb', better: 'higher', unit: 'score', fmt: v => v + ' / 6' },
   };
   const LB = {
     games: GAMES,
@@ -62,7 +62,7 @@ window.Store = (() => {
     { id: 'sudoku',   icon: 'grid', title: 'Grid guru',           text: 'Solved a Sudoku.' },
     { id: 'queens',   icon: 'crown', title: 'Crown holder',        text: 'Placed every queen.' },
     { id: 'pitch',    icon: 'rocket', title: 'Closer',              text: 'Scored 60+ in Pitch Rush.' },
-    { id: 'quiz',     icon: 'bulb', title: 'Business IQ',         text: 'Aced the quiz.' },
+    { id: 'quiz',     icon: 'bulb', title: 'Riddle master',       text: 'Solved every interview riddle in a round.' },
   ];
   const ACH = {
     list: ACHIEVEMENTS,

@@ -1,5 +1,6 @@
 /* book.js — the flipbook (page-flip engine), sizing, navigation and page-visibility events */
 window.Book = (() => {
+  let INTERACTIVE_SEL = '';
   let flip = null, pages = [], total = 0, stage, bookEl, lastVisible = '', curIdx = 0;
   const W = CONFIG.book.width, H = CONFIG.book.height, RATIO = W / H;
 
@@ -28,8 +29,31 @@ window.Book = (() => {
     });
     flip.loadFromHTML(pages);
 
+    // Touch devices: the engine's swipe needs a sub-250 ms flick and its slow-drag direction depends on
+    // where the finger starts, which made going back unreliable. Keep touches away from the engine and
+    // navigate with our own swipe + edge-tap detection instead (mouse drag/fold still works on desktop).
+    bookEl.addEventListener('touchstart', e => e.stopPropagation(), { capture: true, passive: true });
+    let tp = null;
+    stage.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'touch') return;
+      tp = { x: e.clientX, y: e.clientY, t: performance.now(), interactive: !!e.target.closest(".no-flip, .game, .compare, .scratch, .zip, input") };   // only widgets that drag horizontally keep the swipe
+    }, { passive: true });
+    stage.addEventListener('pointerup', e => {
+      if (e.pointerType !== 'touch' || !tp) return;
+      const p = tp; tp = null;
+      if (p.interactive) return;
+      const dx = e.clientX - p.x, dy = e.clientY - p.y, dt = performance.now() - p.t;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.3 && dt < 1200) { dx < 0 ? next() : prev(); return; }
+      if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+        const r = stage.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        if (y > .3 && y < .7) { if (x < .12) prev(); else if (x > .88) next(); }
+      }
+    }, { passive: true });
+    stage.addEventListener('pointercancel', () => { tp = null; });
+
     // Interactive elements must never start a fold or a corner flip, even near page edges.
-    const INTERACTIVE = 'button, a, input, [data-goto], [data-tip], .popcard, .flipcard, .tag, .toc li, .acc__head, .world__dot, .compare, .game, .hold, .holdbar, .poll__opt, .wyr, .popflap, .rsvp, .save, .drawer, .scratch, .lau-mark, .ring-stat';
+    const INTERACTIVE = INTERACTIVE_SEL = 'button, a, input, [data-goto], [data-tip], .popcard, .flipcard, .tag, .toc li, .acc__head, .world__dot, .compare, .game, .hold, .holdbar, .poll__opt, .wyr, .popflap, .rsvp, .save, .drawer, .scratch, .lau-mark, .ring-stat';
     pages.forEach(p => ['mousedown', 'touchstart'].forEach(t =>
       p.addEventListener(t, e => { if (e.target.closest(INTERACTIVE)) e.stopPropagation(); }, { passive: true })));
 
@@ -117,9 +141,17 @@ window.Book = (() => {
     U.$('#nav-next').classList.toggle('is-off', vis.includes(total - 1));
   }
 
-  function next() { SFX.unlock(); flip.flipNext(); }
-  function prev() { SFX.unlock(); flip.flipPrev(); }
-  function goTo(n) { SFX.unlock(); n = U.clamp(n, 0, total - 1); if (n === flip.getCurrentPageIndex()) return; flip.flip(n); }
+  // The engine performs programmatic flips by simulating a click at the page edge, and in portrait
+  // mode the backward point is not inside a corner zone, so disableFlipByClick would reject it.
+  // Lift that setting for the duration of our own flips only.
+  function programmatic(fn) {
+    const s = flip.getSettings(); const was = s.disableFlipByClick;
+    s.disableFlipByClick = false;
+    try { fn(); } finally { s.disableFlipByClick = was; }
+  }
+  function next() { SFX.unlock(); programmatic(() => flip.flipNext()); }
+  function prev() { SFX.unlock(); programmatic(() => flip.flipPrev()); }
+  function goTo(n) { SFX.unlock(); n = U.clamp(n, 0, total - 1); if (n === flip.getCurrentPageIndex()) return; programmatic(() => flip.flip(n)); }
 
   function reveal() {
     U.$('#app').classList.add('is-visible');
